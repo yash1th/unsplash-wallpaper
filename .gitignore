@@ -1,0 +1,25 @@
+#Distribution/packagin
+lib/
+bin/
+include/
+
+#pycache
+__pycache__/
+**/__pycache__
+
+#pip-selfcheck
+pip-selfcheck.json
+
+#configuration-files
+*.cfg
+
+#system-generated files
+**/.DS_Store
+.DS_Store
+
+#ignore scratch-work folder
+scratch-work/
+
+#ignore app-id.txt
+app_id.txt
+log.txt
