@@ -1,3 +1,4 @@
+
 import requests
 import argparse
 import sys
@@ -13,49 +14,60 @@ HEIGHT = '900'
 
 def parse_args():
     parser = argparse.ArgumentParser(description = 'arguments of how to change wallpaper')
-    parser.add_argument('-d','--display', type = int, default = 0,
-                        help = 'Desktop display number on OS X (0: all displays, 1: main display, etc')
-    parser.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
-    parser.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
-    subparsers = parser.add_subparsers(help = 'mode of result fixed or random or photo_id', dest = 'command')
-    parser_random = subparsers.add_parser('random')
-    #parser_random.add_argument('-r','--random',action = 'store_true', default = False, help = 'random flag')
+    subparsers = parser.add_subparsers(help = 'type of photo you want', dest = 'command')
+    
+    parser_unsplash = subparsers.add_parser('unsplash', description = 'will search for entire unsplash')
+    parser_unsplash.add_argument('time',nargs='?',type=str.lower,default=None,choices=['daily','weekly'],help = 'fixed image of the day')
+    parser_unsplash.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
+    parser_unsplash.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
+    
 
     parser_user = subparsers.add_parser('user')
-    #parser_fixed.add_argument('-t','--time', type = str.lower, choices = ['daily','weekly'], help = 'time period')
+    parser_user.add_argument('username',type=str,help='username of the user')
+    parser_user.add_argument('time',nargs='?',type=str.lower,default=None,choices=['daily','weekly'],help = 'fixed image of the day')
+    parser_user.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
+    parser_user.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
 
+    parser_likes = subparsers.add_parser('likes')
+    parser_likes.add_argument('username',type=str,help='username of the user')
+    parser_likes.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
+    parser_likes.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
 
-    parser_specific_photo = subparsers.add_parser('specific_photo')
-    parser_specific_photo.add_argument('photo_id',type=str, help='id of the photo')
+    parser_collection = subparsers.add_parser('collection')
+    parser_collection.add_argument('collection_id',type=str,help='ID of the collection')
+    parser_collection.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
+    parser_collection.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
+
+    parser_search = subparsers.add_parser('search')
+    parser_search.add_argument('by',type=str.lower,nargs = '?',default = 'size', choices = ['curated', 'size','category'])
     
+    parser_search.add_argument('-terms',nargs = '+')
+    
+
+    # subparsers = parser.add_subparsers(help = 'mode of result fixed or random or photo_id', dest = 'command')
+    # parser_random = subparsers.add_parser('random')
+    # parser_random.add_argument('-t','--time', type=str.lower, default=None, choices = ['daily','weekly'], help = 'time period')
+    # #parser_random.add_argument('-r','--random',action = 'store_true', default = False, help = 'random flag')
+
+    # #parser_user = subparsers.add_parser('user')
+
+
+    parser_photo = subparsers.add_parser('photo')
+    parser_photo.add_argument('photo_id',type=str, help='id of the photo')
+    parser_photo.add_argument('-w','--width',type = str,default = WIDTH, help = 'width of the photo you need')
+    parser_photo.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
+
+
+    parser.add_argument('-d','--display', type = int, default = 0,
+                        help = 'Desktop display number on OS X (0: all displays, 1: main display, etc')
+    # #parser.add_argument('-t','--time', type=str.lower, default='daily', choices = ['daily','weekly'], help = 'time period')
     return parser.parse_args()
-
-def random_image(**kwargs):
-    print('random image is called')
-    if kwargs.get('width') or kwargs.get('height'):
-        photo_response = get_response(BASE_URL+'random/'+kwargs.get('width')+'x'+kwargs.get('height'))
-    else:
-        photo_response = get_response(BASE_URL+'random')
-    save_photo(photo_response)
-
-def debug_request(r):
-    print('status code = ',r.status_code)
-    print('url = ',r.url)
-    print('type of r = ',type(r.content))
 
 def get_response(url):
     r = requests.get(url)
     if r.status_code != 200 or r.url == 'https://images.unsplash.com/photo-1446704477871-62a4972035cd?fit=crop&fm=jpg&h=800&q=50&w=1200':
         sys.exit("Couldn't find that photo")
     return r
-
-def specific_photo(photo_id, display, **kwargs):
-    if kwargs.get('width') or kwargs.get('height'):
-        photo_response = get_response(BASE_URL+photo_id+kwargs.get('width',WIDTH)+'x'+kwargs.get('height',HEIGHT))
-    else:
-        photo_response = get_response(BASE_URL+photo_id)
-    save_photo(photo_response)
-    change_wallpaper(os.getcwd()+r'/wallpaper.jpg', display)
 
 def save_photo(photo_response):
     with open('wallpaper.jpg', 'wb') as f:
@@ -84,14 +96,45 @@ def change_wallpaper(save_location, display):
     
     os.system(cmd)
 
+def get_image(url):
+    print('url = ',url)
+    #sys.exit()
+    photo_response = get_response(url)
+    save_photo(photo_response)
+
 def main():
     args = parse_args()
-    #print(args)
-    if args.command == 'specific_photo':
-        specific_photo(args.photo_id, args.display, width = args.width, height = args.height)
-    elif args.command == 'random':
-        random_image(width = args.width, height = args.height)
-        
+    print(args)
+    sys.exit('exiting main')
+    if args.command == 'unsplash':
+        if args.time is None:
+            get_image(BASE_URL+'random/'+args.width+'x'+args.height)
+        else:
+            get_image(BASE_URL+args.time)
+    elif args.command == 'user':
+        print('user parser is called')
+        if args.time is None:
+            get_image(USER_URL+args.username+'/'+args.width+'x'+args.height)
+        else:
+            get_image(USER_URL+args.username+'/'+args.time)
+    elif args.command == 'likes':
+        print('likes parser is called')
+        get_image(USER_URL+args.username+'/likes/'+args.width+'x'+args.height)
+    
+    elif args.command == 'collection':
+        print('collection parser is called')
+        get_image(COLLECTION_URL+args.collection_id+'/'+args.width+'x'+args.height)
+    
+    elif args.command == 'search':
+        print('search parser is called')
+
+    elif args.command == 'photo':
+        print('photo parser is called')
+        get_image(BASE_URL+args.photo_id+'/'+args.width+'x'+args.height)
+
+    os.system('open wallpaper.jpg')
+    sys.exit()
+    #change_wallpaper(os.getcwd()+r'/wallpaper.jpg', args.display)
     
 if __name__ == '__main__':
     main()
