@@ -39,18 +39,9 @@ def parse_args():
     parser_collection.add_argument('-e','--height',type = str,default = HEIGHT, help = 'height of the photo you need')
 
     parser_search = subparsers.add_parser('search')
-    parser_search.add_argument('by',type=str.lower,nargs = '?',default = 'size', choices = ['curated', 'size','category'])
-    
-    parser_search.add_argument('-terms',nargs = '+')
-    
-
-    # subparsers = parser.add_subparsers(help = 'mode of result fixed or random or photo_id', dest = 'command')
-    # parser_random = subparsers.add_parser('random')
-    # parser_random.add_argument('-t','--time', type=str.lower, default=None, choices = ['daily','weekly'], help = 'time period')
-    # #parser_random.add_argument('-r','--random',action = 'store_true', default = False, help = 'random flag')
-
-    # #parser_user = subparsers.add_parser('user')
-
+    parser_search.add_argument('--category',type=str.lower,default='',help='searches full database by a category')
+    parser_search.add_argument('-f',action='store_true',default=False,help='filters by searching in curated collections')
+    parser_search.add_argument('-terms',nargs = '+',default='')
 
     parser_photo = subparsers.add_parser('photo')
     parser_photo.add_argument('photo_id',type=str, help='id of the photo')
@@ -105,7 +96,7 @@ def get_image(url):
 def main():
     args = parse_args()
     print(args)
-    sys.exit('exiting main')
+    #sys.exit('exiting main')
     if args.command == 'unsplash':
         if args.time is None:
             get_image(BASE_URL+'random/'+args.width+'x'+args.height)
@@ -127,13 +118,27 @@ def main():
     
     elif args.command == 'search':
         print('search parser is called')
+        if args.category:
+            url = BASE_URL+'category/'+args.category+'/'
+        else:
+            url = BASE_URL
+        if args.f:
+            url += 'featured/'
+        get_image(url+'?'+','.join(args.terms))
+            #BASE_URL+'category/'+args.category+'/?'+','.join(args.terms)
+
+            
+            #get_image(BASE_URL+args.width+'x'+args.height)
+            #https://source.unsplash.com/featured/1600x900/?nature,water -- working
+            #https://source.unsplash.com/category/buildings/featured/1600x900/?montreal -- working
+
 
     elif args.command == 'photo':
         print('photo parser is called')
         get_image(BASE_URL+args.photo_id+'/'+args.width+'x'+args.height)
 
-    os.system('open wallpaper.jpg')
     sys.exit()
+    os.system('open wallpaper.jpg')
     #change_wallpaper(os.getcwd()+r'/wallpaper.jpg', args.display)
     
 if __name__ == '__main__':
