@@ -1,5 +1,6 @@
+#!/usr/local/bin/python3
 '''
-abcd
+changes wallpaper of your desktop environment using images from unsplash
 '''
 import argparse
 import sys
@@ -20,8 +21,9 @@ CATEGORY_LIST = ['nature', 'people']
 CATEGORY_NAME = random.choice(CATEGORY_LIST).lower()
 
 def parse_args():
-    '''
-    parses the arguments
+    '''parse args with argparse
+    Returns: 
+        args: parsed arguments from the command line
     '''
     parser = argparse.ArgumentParser(description='change wallpaper of your desktop environment using images from "unsource.unsplash.com"')
     subparsers = parser.add_subparsers(help='type of photo you want', dest='command')
@@ -72,8 +74,11 @@ def parse_args():
     return parser.parse_args()
 
 def get_response(url):
-    '''
-    provides response
+    '''returns a response when provided a url
+    Arguments:
+        url: a uniform resource locator to fetch response from
+    Returns:
+        response: response from the server if it the status code is 200
     '''
     response = requests.get(url)
     if response.status_code != 200 or response.url == 'https://images.unsplash.com/photo-1446704477871-62a4972035cd?fit=crop&fm=jpg&h=800&q=50&w=1200':
@@ -81,8 +86,9 @@ def get_response(url):
     return response
 
 def name():
-    '''
-    provides a name
+    '''creates a file name with the current date and time in the format Month-Date-Year_Hours.Minutes.Seconds.jpg
+    Returns:
+        a file name
     '''
     import datetime
     now = datetime.datetime.now()
@@ -91,16 +97,20 @@ def name():
 WALLPAPER_NAME = name()
 
 def save_photo(photo_response, filename):
-    '''
-    saves photo
+    '''saves photo and writes it to a file
+    Arguments:
+        photo_response: response from the server
+        filename: name of the file to write the response to
     '''
     with open(filename, 'wb') as photo:
         for chunk in photo_response:
             photo.write(chunk)
 
 def change_wallpaper(save_location, display):
-    '''
-    changes photo
+    '''changes the wallpaper of your desktop environment (works on windows, OS X)
+    Arguments:
+        save_location: Location of the file where the wallpaper needs to be changed
+        display: desktop number on OS X for which wallpaper needs to be changed
     '''
     platform_name = platform.system()
     if platform_name.startswith('Win'):
@@ -132,21 +142,19 @@ def change_wallpaper(save_location, display):
         os.system(cmd)
 
 def get_image(url):
-    '''
-    gets the image from internet
+    '''gets the image from the internet
+    Arguments:
+        url: url of the image
     '''
     photo_response = get_response(url)
     save_photo(photo_response, WALLPAPER_NAME)
 
 def default():
-    '''
-    in case of no arguments at all
-    '''
+    'in case of no arguments are passed in command line'
     get_image(BASE_URL+'featured/'+WIDTH+'x'+HEIGHT+'/?')
 
 def main():
-    '''
-    main function
+    '''main function
     '''
     args = parse_args()
     if args.command is None:
