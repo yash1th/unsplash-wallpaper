@@ -3,5 +3,5 @@ chardet==3.0.4
 idna==2.6
 py==1.4.34
 pytest==3.2.3
-requests==2.18.4
-urllib3==1.22
+requests==2.23.0
+urllib3==1.25.8

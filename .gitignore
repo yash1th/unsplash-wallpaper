@@ -29,3 +29,6 @@ log.txt
 
 #ignore images
 *.jpg
+
+#ignore pycharm
+.idea/
