@@ -29,12 +29,14 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='change wallpaper of your desktop environment using images from "unsource.unsplash.com"')
     subparsers = parser.add_subparsers(help='type of photo you want', dest='command')
+
     parser_unsplash = subparsers.add_parser('unsplash',
                                             description='gives a random image in entire unsplash')
     parser_unsplash.add_argument('time', nargs='?', type=str.lower, default=None,
                                  choices=['daily', 'weekly'], help='timeframe like daily or weekly')
     parser_unsplash.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you want')
     parser_unsplash.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you want')
+
     # parser user
     parser_user = subparsers.add_parser('user')
     parser_user.add_argument('username', type=str, help='username of the user')
@@ -42,16 +44,19 @@ def parse_args():
                              help='fixed image of the time frame')
     parser_user.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you need')
     parser_user.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you need')
+
     # parser for user likes
     parser_likes = subparsers.add_parser('likes')
     parser_likes.add_argument('username', type=str, help='username of the user')
     parser_likes.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you need')
     parser_likes.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you need')
+
     # parser for collections
     parser_collection = subparsers.add_parser('collection')
     parser_collection.add_argument('collection_id', type=str, help='ID of the collection')
     parser_collection.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you need')
     parser_collection.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you need')
+
     # parser for search by category
     parser_search_category = subparsers.add_parser('search_category',
                                                    description='subparser to search photo by category',
@@ -65,6 +70,7 @@ def parse_args():
     parser_search_category.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you need')
     parser_search_category.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you need')
     parser_search_category.add_argument('-terms', nargs='+', default='')
+
     # parser for search by size
     parser_search_size = subparsers.add_parser('search_size', description='subparser to search photo by size',
                                                help='search a photo by given size')
@@ -75,6 +81,7 @@ def parse_args():
     parser_search_size.add_argument('-w', '--width', type=str, default=WIDTH, help='width of the photo you need')
     parser_search_size.add_argument('-e', '--height', type=str, default=HEIGHT, help='height of the photo you need')
     parser_search_size.add_argument('-terms', nargs='+', default='')
+
     # parser for a specific photo
     parser_photo = subparsers.add_parser('photo')
     parser_photo.add_argument('photo_id', type=str, help='id of the photo')

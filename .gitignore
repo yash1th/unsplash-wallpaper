@@ -18,7 +18,7 @@ pip-selfcheck.json
 .DS_Store
 
 #ignore scratch-work folder
-scratch-work/
+scratch/
 
 #ignore app-id.txt
 app_id.txt
